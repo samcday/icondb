@@ -7,7 +7,12 @@
     "type": "git",
     "url": "git://github.com/samcday/icondb.git"
   },
-  "dependencies": {},
+  "dependencies": {
+    "express": "~2.5.10",
+    "kue": "~0.3.4",
+    "redis": "~0.7.2",
+    "mongoose": "~2.7.0"
+  },
   "devDependencies": {},
   "optionalDependencies": {},
   "engines": {
