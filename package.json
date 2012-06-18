@@ -1,0 +1,16 @@
+{
+  "author": "",
+  "name": "icondb",
+  "description": "iOS Winterboard theme icon database.",
+  "version": "0.0.1",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/samcday/icondb.git"
+  },
+  "dependencies": {},
+  "devDependencies": {},
+  "optionalDependencies": {},
+  "engines": {
+    "node": "*"
+  }
+}
