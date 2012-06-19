@@ -12,5 +12,7 @@ AppSchema = new Schema
 	latestBundle:
 		type: Schema.ObjectId
 		ref: "Bundle"
+	iTunesID:
+		type: Number
 
 module.exports = mongoose.model "App", AppSchema

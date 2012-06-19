@@ -5,9 +5,6 @@ BundleSchema = new Schema
 	app:
 		type: Schema.ObjectId
 		ref: "App"
-	osType:
-		type: String
-		enum: ["ipad", "iphone", "universal"]
 	name:
 		type: String
 	version:
