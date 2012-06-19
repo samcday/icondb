@@ -15,7 +15,10 @@
     "request": "~2.9.202",
     "node_hash": "~0.2.0",
     "winston": "~0.6.1",
-    "async": "~0.1.22"
+    "async": "~0.1.22",
+    "deathbycaptcha": "0.0.2",
+    "xml2js": "~0.1.14",
+    "sugar": "~1.2.5"
   },
   "devDependencies": {},
   "optionalDependencies": {},

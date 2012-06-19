@@ -8,7 +8,8 @@ util.safeJSONParse = (str, cb) ->
 	catch err
 		cb new Error "JSON parse error"
 
+dummy = () ->
 util.wrapCallback = (cb, next) ->
 	return (err) ->
-		return cb err if err?
+		return (cb || dummy) err if err?
 		next.apply null, Array.prototype.slice.call arguments, 1
