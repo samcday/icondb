@@ -1,9 +1,11 @@
-###
 iTunes = require "./lib/itunes"
 
 iTunes.scrape "com.yelp.yelpiphone", (err, app) ->
-	console.log app
-###
+	console.log arguments
+
+
+# Apptrackr = require "./lib/apptrackr"
+# Apptrackr.app.details 284882215, ["appid"], console.log
 
 #Sendspace = require "./lib/downloaders/sendspace"
 
@@ -11,4 +13,4 @@ iTunes.scrape "com.yelp.yelpiphone", (err, app) ->
 #	console.log url
 
 
-require "./lib/ipa"
+# require "./lib/ipa"

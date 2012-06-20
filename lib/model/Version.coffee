@@ -1,7 +1,7 @@
 mongoose = require "mongoose"
 {Schema} = mongoose
 
-BundleSchema = new Schema
+VersionSchema = new Schema
 	app:
 		type: Schema.ObjectId
 		ref: "App"
@@ -17,5 +17,7 @@ BundleSchema = new Schema
 		type: String
 	ipadRetinaIcon:
 		type: String
+	ipaCrawled:
+		type: Boolean
 
-module.exports = mongoose.model "Bundle", BundleSchema
+module.exports = mongoose.model "Version", VersionSchema

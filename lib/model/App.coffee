@@ -7,12 +7,15 @@ AppSchema = new Schema
 	type:
 		type: String
 		enum: ["cydia", "itunes", "system"]
-	icon:
-		type: String
-	latestBundle:
+	latestVersion:
 		type: Schema.ObjectId
-		ref: "Bundle"
-	iTunesID:
-		type: Number
+		ref: "Version"
+	itunes:
+		id:
+			type: Number
+		lastScrape:
+			type: Date
+		data:
+			type: String
 
 module.exports = mongoose.model "App", AppSchema
