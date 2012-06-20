@@ -8,6 +8,7 @@ DeathByCaptcha = require "deathbycaptcha"
 {exec} = child_process = require "child_process"
 {wrapCallback} = util = require "./util"
 Apptrackr = require "./apptrackr"
+log = require "./log"
 
 pngdefry = path.join __dirname, "..", "util", "pngdefry", "pngdefry"
 
@@ -30,15 +31,17 @@ fixIcon = (iconFile, cb) ->
 
 getPlist = (appPath, cb) ->
 	plistFile = path.join appPath, "Info.plist"
+	console.log plistFile
 	exec "/usr/bin/env plutil -i #{plistFile}", wrapCallback cb, (stdout, stderr) ->
 		plist.parseString stdout, wrapCallback cb, (plist) ->
 			cb null, plist[0]
 
 parseIPA = (ipaFile, cb) ->
+	log.info "[ipa] Parsing #{ipaFile}"
 	async.waterfall [
 		(cb) -> unzip ipaFile, cb
 		(archivePath, cb) -> getAppPath archivePath, cb
-	], (err, appPath) ->
+	], wrapCallback cb, (appPath) ->
 		getPlist appPath, (err, plist) ->
 			iconFile = path.join appPath, plist.CFBundleIconFile
 			fixIcon iconFile, (err) ->

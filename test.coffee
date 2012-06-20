@@ -11,4 +11,4 @@ iTunes.scrape "com.yelp.yelpiphone", (err, app) ->
 #	console.log url
 
 
-require "./lib/ipacrawler"
+require "./lib/ipa"
