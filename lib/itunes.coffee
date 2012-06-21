@@ -29,7 +29,7 @@ iTunes.scrape = (bundleId, cb) ->
 		.where("bundleId", bundleId)
 		.populate("latestVersion")
 		.exec wrapCallback cb, (app) ->
-			return cb new Error "Wtf?" unless app.type is "itunes"
+			return cb new Error "Wtf?" unless not app or app.type is "itunes"
 			if app?.itunes?.lastScrape?
 				if moment(app.itunes.lastScrape).diff(moment(), "days", true) < 1
 					return cb new Error "Already scraped in the last 24 hours."
