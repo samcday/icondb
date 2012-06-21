@@ -24,8 +24,13 @@
 
 fs = require "fs"
 datafilehost = require "./lib/downloaders/datafilehost"
-datafilehost "http://www.datafilehost.com/download-1dc01e71.html", (err, stream) ->
+datafilehost "http://www.datafilehost.com/download-1dc01e71.html", (err, response, stream) ->
 	return console.error err if err?
+	console.log response
 	stream.pipe fs.createWriteStream "/tmp/test.ipa"
-	stream.on "response", -> console.log arguments
-	stream.on "data", (data) -> console.log data.length
+	stream.resume()
+
+	downloaded = 0
+	stream.on "data", (data) ->
+		downloaded += data.length
+		console.log ((downloaded / response.headers["content-length"]) * 100) + "%"
