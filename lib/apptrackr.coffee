@@ -23,6 +23,9 @@ Apptrackr.request = (object, action, args, cb) ->
 Apptrackr.link.get = (appId, cb) ->
 	Apptrackr.request "Link", "get", { app_id: appId }, cb
 
+Apptrackr.link.getAll = (appId, cb) ->
+	Apptrackr.request "Link", "get", { app_id: appId, all_versions: true }, cb
+
 Apptrackr.app.details = (appId, fields, cb) ->
 	Apptrackr.request "App", "getDetails", 
 		app_id: appId
