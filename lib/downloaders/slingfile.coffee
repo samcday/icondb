@@ -41,6 +41,7 @@ module.exports = (url, cb) ->
 
 				downloadReq.on "error", cb
 				downloadReq.on "response", (resp) ->
+					downloadReq.removeListener "error", cb
 					return cb new Error "Download failed." unless resp.statusCode is 200
 					downloadReq.pause()
 					cb null, resp, downloadReq

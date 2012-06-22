@@ -37,9 +37,18 @@ datafilehost "http://www.datafilehost.com/download-1dc01e71.html", (err, respons
 		console.log ((downloaded / response.headers["content-length"]) * 100) + "%"
 ###
 
-###limelinx = require "./lib/downloaders/limelinx"
-limelinx "http://limelinx.com/files/9c417bf7c3d16eea43907cde3d8225bd", (err) ->
-	console.log arguments###
+limelinx = require "./lib/downloaders/limelinx"
+fs = require "fs"
+limelinx "http://limelinx.com/files/9c417bf7c3d16eea43907cde3d8225bd", (err, response, stream) ->
+	return console.error err if err?
+	console.log response
+	stream.pipe fs.createWriteStream "/tmp/test.ipa"
+	stream.resume()
+
+	downloaded = 0
+	stream.on "data", (data) ->
+		downloaded += data.length
+		console.log ((downloaded / response.headers["content-length"]) * 100) + "%"
 
 
 ###
@@ -52,6 +61,7 @@ console.timeEnd "blah"
 return
 ###
 
+###
 fs = require "fs"
 slingfile = require "./lib/downloaders/slingfile"
 slingfile "http://www.slingfile.com/file/o8yG7ioGbm", (err, response, stream) ->
@@ -64,3 +74,4 @@ slingfile "http://www.slingfile.com/file/o8yG7ioGbm", (err, response, stream) ->
 	stream.on "data", (data) ->
 		downloaded += data.length
 		console.log ((downloaded / response.headers["content-length"]) * 100) + "%"
+###

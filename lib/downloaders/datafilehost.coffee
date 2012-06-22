@@ -17,7 +17,9 @@ module.exports = (url, cb) ->
 			headers:
 				referer: url
 			jar: jar
+		dlReq.once "error", cb
 		dlReq.once "response", (resp) ->
+			dlReq.removeListener "error", cb
 			dlReq.pause()
 			return cb new Error "Download error" unless resp.headers["content-type"] is "application/octet-stream"
 			return cb new Error "Download error" unless resp.headers["content-type"] is "application/octet-stream"
