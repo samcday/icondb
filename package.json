@@ -25,7 +25,8 @@
     "imagemagick": "~0.1.2",
     "mongodb": "~1.0.2",
     "rimraf": "~2.0.2",
-    "moment": "~1.6.2"
+    "moment": "~1.6.2",
+    "jsdom": "~0.2.14"
   },
   "devDependencies": {},
   "optionalDependencies": {},

@@ -22,6 +22,7 @@
 
 # require "./lib/ipa"
 
+###
 fs = require "fs"
 datafilehost = require "./lib/downloaders/datafilehost"
 datafilehost "http://www.datafilehost.com/download-1dc01e71.html", (err, response, stream) ->
@@ -34,3 +35,8 @@ datafilehost "http://www.datafilehost.com/download-1dc01e71.html", (err, respons
 	stream.on "data", (data) ->
 		downloaded += data.length
 		console.log ((downloaded / response.headers["content-length"]) * 100) + "%"
+###
+
+limelinx = require "./lib/downloaders/limelinx"
+limelinx "http://limelinx.com/files/9c417bf7c3d16eea43907cde3d8225bd", (err) ->
+	console.log arguments

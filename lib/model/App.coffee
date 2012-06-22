@@ -17,5 +17,9 @@ AppSchema = new Schema
 			type: Date
 		data:
 			type: String
+	apptrackr:
+		lastScrape:
+			type: Date
+		
 
 module.exports = mongoose.model "App", AppSchema

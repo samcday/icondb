@@ -9,15 +9,23 @@ VersionSchema = new Schema
 		type: String
 	version:
 		type: String
-	iphoneIcon:
-		type: String
-	ipadIcon:
-		type: String
-	iphoneRetinaIcon:
-		type: String
-	ipadRetinaIcon:
-		type: String
-	ipaCrawled:
-		type: Boolean
+	iconFiles:
+		iphone: 
+			type: String
+		ipad:
+			type: String
+		iphoneRetina:
+			type: String
+		ipadRetina:
+			type: String
+	ipa:
+		crawled:
+			type: Boolean
+		source:
+			type: String
+		date:
+			type: Date
+		plist:
+			type: String
 
 module.exports = mongoose.model "Version", VersionSchema
