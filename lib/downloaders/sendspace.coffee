@@ -1,4 +1,3 @@
-require "sugar"
 {EventEmitter} = require "events"
 request = require "request"
 async = require "async"
@@ -17,7 +16,7 @@ sessionKey = null
 sessionTimer = null
 
 isPublicCall = (method) ->
-	return method.startsWith("auth.") and not method.endsWith("checksession") and not method.endsWith("logout")
+	return /^auth\.(?!checksession|logout)/.test method
 
 q = async.queue (task, cb) ->
 	{method, params} = task

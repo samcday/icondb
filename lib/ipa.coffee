@@ -1,4 +1,4 @@
-require "sugar"
+_ = require "underscore"
 temp = require "temp"
 glob = require "glob"
 async = require "async"
@@ -44,7 +44,7 @@ discoverIcons = (appPath, plist, cb) ->
 	icons = [].concat defaultIconNames
 	icons.push plist.CFBundleIconFile if plist.CFBundleIconFile
 	icons = icons.concat plist.CFBundleIconFiles if plist.CFBundleIconFiles
-	icons = (path.join appPath, icon for icon in icons).unique()
+	icons = _.union (path.join appPath, icon for icon in icons)
 	async.filter icons, path.exists, (foundIcons) ->
 		cb null, foundIcons
 

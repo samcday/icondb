@@ -13,12 +13,12 @@ module.exports = (url, cb) ->
 	authReq = request.get url,
 		jar: jar
 	authReq.on "response", (response) ->
-		console.log "yay!"
 		dlReq = request.get "#{downloadUrl}#{fileId}",
 			headers:
 				referer: url
 			jar: jar
 		dlReq.once "response", (resp) ->
 			dlReq.pause()
+			return cb new Error "Download error" unless resp.headers["content-type"] is "application/octet-stream"
 			return cb new Error "Download error" unless resp.headers["content-type"] is "application/octet-stream"
 			cb null, resp, dlReq
