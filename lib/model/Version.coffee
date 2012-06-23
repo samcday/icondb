@@ -1,5 +1,4 @@
-mongoose = require "mongoose"
-{Schema} = mongoose
+{Schema} = mongoose = require "../mongoose"
 
 VersionSchema = new Schema
 	app:

@@ -36,7 +36,7 @@ datafilehost "http://www.datafilehost.com/download-1dc01e71.html", (err, respons
 		downloaded += data.length
 		console.log ((downloaded / response.headers["content-length"]) * 100) + "%"
 ###
-
+###
 limelinx = require "./lib/downloaders/limelinx"
 fs = require "fs"
 limelinx "http://limelinx.com/files/9c417bf7c3d16eea43907cde3d8225bd", (err, response, stream) ->
@@ -49,7 +49,7 @@ limelinx "http://limelinx.com/files/9c417bf7c3d16eea43907cde3d8225bd", (err, res
 	stream.on "data", (data) ->
 		downloaded += data.length
 		console.log ((downloaded / response.headers["content-length"]) * 100) + "%"
-
+###
 
 ###
 $ = require "jquery"
@@ -75,3 +75,33 @@ slingfile "http://www.slingfile.com/file/o8yG7ioGbm", (err, response, stream) ->
 		downloaded += data.length
 		console.log ((downloaded / response.headers["content-length"]) * 100) + "%"
 ###
+
+###
+dreamnet = require "./lib/scrapers/dreamnet.coffee"
+# dreamnet.queue()
+
+job = {
+	progress: (done, total) -> console.warn "progress #{done}/#{total}"
+	log: (msg) -> console.log "#{msg}"
+}
+
+dreamnet.process job, ->
+	console.log arguments
+###
+###
+worker = require "./lib/worker"
+Indexer = require "./lib/indexer"
+
+#Indexer.queue "com.marvel.MarvelMobileComics", ->
+#	console.log "Done!"
+###
+Indexer = require "./lib/indexer"
+job = {
+	progress: (done, total) -> console.warn "progress #{done}/#{total}"
+	log: (msg) -> console.log "#{msg}"
+	data:
+		bundleId: "com.marvel.MarvelMobileComics"
+}
+Indexer.index job, (err) ->
+	console.error err if err
+	console.log "Done!"

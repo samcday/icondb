@@ -37,7 +37,7 @@ iTunes.scrape = (bundleId, cb) ->
 
 			itunesLookup bundleId, wrapCallback cb, (itunes) ->
 				app.bundleId ?= itunes.bundleId
-				app.type ?= "itunes"
+				app.type = "itunes"
 				app.itunes.id ?= itunes.trackId
 				app.itunes.lastScrape = new Date()
 				app.itunes.data = JSON.stringify itunes

@@ -1,6 +1,7 @@
 fs = require "fs"
 path = require "path"
 jsdom = require "jsdom"
+{EventEmitter} = require "events"
 
 module.exports = util = require "util"
 
@@ -15,7 +16,9 @@ util.safeJSONParse = (str, cb) ->
 dummy = () ->
 util.wrapCallback = wrapCallback = (cb, next) ->
 	return (err) ->
-		return (cb || dummy) err if err?
+		if err?
+			return cb.emit "error", err if cb instanceof EventEmitter
+			return (cb || dummy) err if err?
 		next.apply null, Array.prototype.slice.call arguments, 1
 
 qwery = fs.readFileSync path.join __dirname, "..", "util", "qwery.min.js"
@@ -24,3 +27,5 @@ util.qweryify = (html, cb) ->
 		html: html
 		src: [qwery]
 		done: cb
+		features:
+			FetchExternalResources: false
