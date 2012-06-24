@@ -75,7 +75,7 @@ slingfile "http://www.slingfile.com/file/o8yG7ioGbm", (err, response, stream) ->
 		downloaded += data.length
 		console.log ((downloaded / response.headers["content-length"]) * 100) + "%"
 ###
-
+###
 dreamnet = require "./lib/scrapers/dreamnet.coffee"
 # dreamnet.queue()
 
@@ -86,7 +86,7 @@ job = {
 
 dreamnet.process job, ->
 	console.log arguments
-
+###
 ###
 worker = require "./lib/worker"
 Indexer = require "./lib/indexer"
@@ -184,3 +184,21 @@ setTimeout ->
 		console.log arguments
 , 1000
 ###
+
+job = {
+	progress: (done, total) -> console.warn "progress #{done}/#{total}"
+	log: (msg) -> console.log "#{msg}"
+}
+
+
+Cydia = require "./lib/cydia"
+CydiaRepository = require "./lib/model/CydiaRepository"
+
+job = {
+	progress: (done, total) -> console.warn "progress #{done}/#{total}"
+	log: (msg) -> console.log "#{msg}"
+	data: repo: "4fe6faf8b261df4356000001"
+}
+
+Cydia.processRepository job,  ->
+	console.log arguments

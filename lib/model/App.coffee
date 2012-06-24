@@ -45,6 +45,10 @@ AppSchema = new Schema
 	apptrackr:
 		lastScrape:
 			type: Date
+	cydia:
+		repository:
+			type: Schema.ObjectId
+			ref: "CydiaRepository"
 
 AppSchema.statics.findOrCreate = (bundleId, cb) ->
 	app = new (this.model "App")
