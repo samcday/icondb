@@ -76,7 +76,6 @@ slingfile "http://www.slingfile.com/file/o8yG7ioGbm", (err, response, stream) ->
 		console.log ((downloaded / response.headers["content-length"]) * 100) + "%"
 ###
 
-###
 dreamnet = require "./lib/scrapers/dreamnet.coffee"
 # dreamnet.queue()
 
@@ -87,7 +86,7 @@ job = {
 
 dreamnet.process job, ->
 	console.log arguments
-###
+
 ###
 worker = require "./lib/worker"
 Indexer = require "./lib/indexer"
@@ -175,7 +174,7 @@ setTimeout ->
 		console.log arguments
 , 1000
 ###
-
+###
 icons = require "./lib/icons"
 fs = require "fs"
 
@@ -184,3 +183,4 @@ setTimeout ->
 	icons.new fs.createReadStream("/tmp/Qouch-v1.2.0-gers1978.ipa"), null, null, ->
 		console.log arguments
 , 1000
+###

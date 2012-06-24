@@ -65,7 +65,7 @@ Icons.new = (incoming, app, user, cb) ->
 				return cb new Error "Convert failed with error code #{code}" unless code is 0
 				handleConvert = ->
 					cb null, hash.digest "base64"
-				if identify.stdout.destroyed then handleConvert() else identify.stdout.once "end", handleConvert
+				if convert.stdout.destroyed then handleConvert() else convert.stdout.once "end", handleConvert
 	, (err, results) ->
 		if err
 			cleanup()
@@ -73,10 +73,9 @@ Icons.new = (incoming, app, user, cb) ->
 		grid.end()
 
 		iconType = results.identify
-		hash = results.convert
 
 		icon.type = iconType
-		icon.hash = hash
+		icon.hash = results.convert
 
 		icon.save (err) ->
 			if err

@@ -1,7 +1,6 @@
 _ = require "underscore"
 {Schema} = mongoose = require "../mongoose"
 {wrapCallback} = util = require "../util"
-Indexer = require "../indexer"
 
 VersionSchema = new Schema
 	name:
@@ -60,7 +59,7 @@ AppSchema.statics.findOrCreate = (bundleId, cb) ->
 			return this.findOne { bundleId: bundleId }, cb
 
 		# If there wasn't an error at all, it means we just created a new App.
-		Indexer.queue bundleId
+		(require "../indexer").queue bundleId
 		cb null, app
 
 AppSchema.methods.findOrCreateVersion = (search, cb) ->
