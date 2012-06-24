@@ -1,3 +1,0 @@
-[submodule "vendor/GridFS"]
-	path = vendor/GridFS
-	url = https://github.com/samcday/GridFS.git
