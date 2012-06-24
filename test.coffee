@@ -95,6 +95,7 @@ Indexer = require "./lib/indexer"
 #Indexer.queue "com.marvel.MarvelMobileComics", ->
 #	console.log "Done!"
 ###
+###
 Indexer = require "./lib/indexer"
 job = {
 	progress: (done, total) -> console.warn "progress #{done}/#{total}"
@@ -102,6 +103,84 @@ job = {
 	data:
 		bundleId: "com.marvel.MarvelMobileComics"
 }
+
 Indexer.index job, (err) ->
 	console.error err if err
 	console.log "Done!"
+###
+###
+App = require "./lib/model/App"
+
+App.findOrCreate "com.foo.bar", ->
+	console.log arguments
+###
+###
+fs = require "fs"
+
+#foo = fs.createReadStream "/tmp/test.png"
+#foo = fs.createReadStream "/tmp/test.jpg"
+foo = fs.createReadStream "/tmp/Qouch-v1.2.0-gers1978.ipa"	
+
+{spawn} = require "child_process"
+
+# proc = spawn "identify", ["-"]
+proc = spawn "convert", ["-", "gif:-"]
+
+#proc.stdout.setEncoding "utf8"
+#proc.stdout.on "data", console.log
+proc.stdout.on "data", -> console.log "omg! data!"
+proc.stdout.pipe fs.createWriteStream "/tmp/out.gif"
+
+proc.stderr.setEncoding "utf8"
+proc.stderr.on "data", console.log
+
+foo.pipe proc.stdin
+foo.on "data", -> console.log "wrote"
+
+proc.stdin.on "error", ->
+	console.log "error", arguments
+
+proc.on "exit", ->
+	console.log arguments
+###
+###
+foo = fs.createReadStream "/tmp/out.tiff"
+proc = spawn "identify", ["-"]
+proc.stdout.setEncoding "utf8"
+proc.stdout.on "data", console.log
+proc.stderr.setEncoding "utf8"
+proc.stderr.on "data", console.log
+
+totalBytes = 0
+foo.pipe proc.stdin
+foo.on "data", (data) ->
+	totalBytes += data.length
+	console.log totalBytes
+###
+
+
+###
+mongoose = require "./lib/mongoose"
+{GridStream} = GridFS = require "GridFS"
+
+setTimeout ->
+	s = GridStream.createGridWriteStream mongoose.connection.db, "foo", "w"
+
+	s.write "hehehe"
+	s.end()
+
+	s.on "error", ->
+		console.log arguments
+	s.on "close", ->
+		console.log arguments
+, 1000
+###
+
+icons = require "./lib/icons"
+fs = require "fs"
+
+setTimeout ->
+	# icons.new fs.createReadStream("/tmp/Icon.png"), null, null, ->
+	icons.new fs.createReadStream("/tmp/Qouch-v1.2.0-gers1978.ipa"), null, null, ->
+		console.log arguments
+, 1000

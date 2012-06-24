@@ -11,13 +11,13 @@ jobs = require "../jobs"
 App = require "../model/App"
 User = require "../model/User"
 
-appIndexUrl = "http://glasklarthd.dreamnet.at/app_index.php"
-appIconUrl = "http://glasklarthd.dreamnet.at/theicons/%d/icon1/%s"
+appIndexUrl	= "http://glasklarthd.dreamnet.at/app_index.php"
+appIconUrl 	= "http://glasklarthd.dreamnet.at/theicons/%d/icon1/%s"
 
-createIcon = (bundleId, iconName, job, cb) ->
-	App.findOne { bundleId: bundleId }, wrapCallback cb, (app) ->
-		return cb() if not app
-		job.log "Downloading icon for #{bundleId}"
+createIcon = (app, iconName, job, cb) ->
+	return cb() if not app
+	job.log "Downloading icon for #{bundleId}"
+	
 
 processApp = (task, cb) ->
 	{bundleId, iconName, job} = task
@@ -27,12 +27,9 @@ processApp = (task, cb) ->
 		if isMember
 			job.log "Skipping #{bundleId} as we already have it."
 			return cb()
-		App.count { bundleId: bundleId }, wrapCallback cb, (count) ->
-			if count
-				createIcon bundleId, iconName, job, cb
-			else
-				indexer.queue bundleId, ->
-					createIcon bundleId, iconName, job, cb
+		App.findOrCreate bundleId, wrapCallback cb, (app) ->
+			app.iconHints iphoneRetina: iconName, wrapCallback cb, ->
+				createIcon app, iconName, job, cb
 
 createGKIUser = (cb) ->
 	User.findOne { username: "GKI" }, wrapCallback cb, (user) ->

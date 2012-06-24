@@ -12,7 +12,5 @@ IconSchema = new Schema
 		enum: ["iphone", "iphoneRetina", "ipad", "ipadRetina"]
 	hash:
 		type: String
-	data:
-		type: Buffer
 
 module.exports = mongoose.model "Icon", IconSchema

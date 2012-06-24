@@ -5,7 +5,6 @@ moment = require "moment"
 {wrapCallback} = util = require "./util"
 mongoose = require "./mongoose"
 App = require "./model/App"
-Version = require "./model/Version"
 log = require "./log"
 
 module.exports = iTunes = {}
@@ -29,11 +28,10 @@ iTunes.scrape = (bundleId, cb) ->
 		.where("bundleId", bundleId)
 		.populate("latestVersion")
 		.exec wrapCallback cb, (app) ->
-			return cb new Error "Wtf?" unless not app or app.type is "itunes"
-			if app?.itunes?.lastScrape?
+			return cb new Error "iTunes scrape request on invalid app type." if app and not (app.type is "itunes" or app.type is "unknown")
+			if app.itunes.lastScrape
 				if moment(app.itunes.lastScrape).diff(moment(), "days", true) < 1
 					return cb new Error "Already scraped in the last 24 hours."
-			app ?= new App
 
 			itunesLookup bundleId, wrapCallback cb, (itunes) ->
 				app.bundleId ?= itunes.bundleId
