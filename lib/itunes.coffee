@@ -26,7 +26,6 @@ itunesLookup = (bundleId, cb) ->
 iTunes.scrape = (bundleId, cb) ->
 	App.findOne()
 		.where("bundleId", bundleId)
-		.populate("latestVersion")
 		.exec wrapCallback cb, (app) ->
 			return cb new Error "iTunes scrape request on invalid app type." if app and not (app.type is "itunes" or app.type is "unknown")
 			if app.itunes.lastScrape
@@ -35,24 +34,12 @@ iTunes.scrape = (bundleId, cb) ->
 
 			itunesLookup bundleId, wrapCallback cb, (itunes) ->
 				app.bundleId ?= itunes.bundleId
-				app.type = "itunes"
 				app.itunes.id ?= itunes.trackId
 				app.itunes.lastScrape = new Date()
-				app.itunes.data = JSON.stringify itunes
+				app.type = "itunes"
+				app.name = itunes.trackName
 				app.icon = itunes.artworkUrl60
+				app.latestVersion = itunes.version
 
 				app.save wrapCallback cb, ->
-					# Find the latest version.
-					Version.findOne()
-						.where("app", app._id)
-						.where("version", itunes.version)
-						.exec wrapCallback cb, (version) ->
-							version = new Version unless version
-							version.app ?= app._id
-							version.version ?= itunes.version
-							version.name = itunes.trackName
-							version.save wrapCallback cb, ->
-								app.latestVersion = version
-								app.save wrapCallback cb, ->
-									cb null, app
-																
+					cb null, app

@@ -2,10 +2,15 @@ _ = require "underscore"
 {Schema} = mongoose = require "../mongoose"
 {wrapCallback} = util = require "../util"
 
-VersionSchema = new Schema
-	name:
+AppSchema = new Schema
+	bundleId:
 		type: String
-	version:
+		index: true
+		unique: true
+	type:
+		type: String
+		enum: ["cydia", "itunes", "system", "unknown"]
+	name:
 		type: String
 	iconFiles:
 		iphone: 
@@ -16,32 +21,13 @@ VersionSchema = new Schema
 			type: String
 		ipadRetina:
 			type: String
-	ipa:
-		crawled:
-			type: Boolean
-		source:
-			type: String
-		date:
-			type: Date
-		plist:
-			type: String
-
-AppSchema = new Schema
-	bundleId:
+	latestVersion:
 		type: String
-		index: true
-		unique: true
-	type:
-		type: String
-		enum: ["cydia", "itunes", "system", "unknown"]
-	versions: [VersionSchema]
 	itunes:
 		id:
 			type: Number
 		lastScrape:
 			type: Date
-		data:
-			type: String
 	apptrackr:
 		lastScrape:
 			type: Date
@@ -49,12 +35,20 @@ AppSchema = new Schema
 		repository:
 			type: Schema.ObjectId
 			ref: "CydiaRepository"
+	ipa:
+		crawled:
+			type: Boolean
+		version:
+			type: String
+		source:
+			type: String
+		date:
+			type: Date
 
 AppSchema.statics.findOrCreate = (bundleId, cb) ->
 	app = new (this.model "App")
 	app.bundleId = bundleId
 	app.type = "unknown"
-	app.versions.push {}
 	app.save (err) =>
 		if err
 			# If the err.code is 11000, it just means the app already exists.
@@ -66,23 +60,8 @@ AppSchema.statics.findOrCreate = (bundleId, cb) ->
 		(require "../indexer").queue bundleId
 		cb null, app
 
-AppSchema.methods.findOrCreateVersion = (search, cb) ->
-	version = _.find this.versions, (version) -> version.version is search
-	if version then return process.nextTick -> cb null, version
-	newVersion = { version: search }
-	this.versions.push newVersion
-	this.save wrapCallback cb, ->
-		cb null, newVersion
-
-AppSchema.methods.getLatestVersion = ->
-	latest = null
-	for version in this.versions
-		latest = version if latest is null or latest.version.localeCompare(version.version) < 0
-	return latest
-
 AppSchema.methods.iconHints = (hints, cb) ->
-	for version in this.versions
-		_.defaults version.iconFiles, hints
+	_.defaults this.iconFiles, hints
 	this.save cb
 
 module.exports = mongoose.model "App", AppSchema
