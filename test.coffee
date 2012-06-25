@@ -185,6 +185,7 @@ setTimeout ->
 , 1000
 ###
 
+###
 util = require "./lib/util"
 fs = require "fs"
 
@@ -192,9 +193,13 @@ bz2 = new util.bunzip2()
 
 zzz = fs.createReadStream("/tmp/foo.html").pipe(bz2).pipe(process.stdout)
 
+bz2.on "error", (err) -> console.error err
+
+
 return 
+###
 
-
+###
 job = {
 	progress: (done, total) -> console.warn "progress #{done}/#{total}"
 	log: (msg) -> console.log "#{msg}"
@@ -203,17 +208,9 @@ job = {
 
 Cydia = require "./lib/cydia"
 CydiaRepository = require "./lib/model/CydiaRepository"
+Cydia.queueCrawl()
+###
 
-job = {
-	progress: (done, total) -> console.warn "progress #{done}/#{total}"
-	log: (msg) -> console.log "#{msg}"
-	data: repo: "4fe6faf8b261df4356000001"
-}
-
-Cydia.processRepository job,  ->
-	console.log arguments
-
-
-
-
-
+###CydiaRepository.findById "4fe6fbbf31581a35c53a2289", (err, repo) ->
+	return console.error err if err
+	Cydia.queueRepository repo###

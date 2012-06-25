@@ -2,9 +2,13 @@ _ = require "underscore"
 url = require "url"
 request = require "request"
 async = require "async"
+humanize = require "humanize"
+zlib = require "zlib"
+{WritableStreamBuffer} = require "stream-buffers"
 {wrapCallback} = util = require "./util"
 jobs = require "./jobs"
 log = require "./log"
+redis = require "./redis"
 
 CydiaRepository = require "./model/CydiaRepository"
 
@@ -13,19 +17,24 @@ module.exports = Cydia = {}
 indexLineRegex = /(.+?)\:\s?(.*)/
 
 parseIndexFile = (raw) ->
-	lines = _.compact raw.trim().split "\n"
-	obj = {}
+	lines = raw.trim().split "\n"
+	result = []
+	currentObj = null
 	prevKey = ""
 	for line in lines
+		unless line
+			currentObj = null 
+			continue
+		result.push currentObj = {} unless currentObj
 		if line[0] is " "
-			obj[prevKey] += line
+			currentObj[prevKey] += line
 			continue
 		matches = indexLineRegex.exec line
 		continue unless matches
 		[key, value] = matches.slice 1
-		prevKey = key
-		obj[key] = value
-	return obj
+		prevKey = key.toLowerCase()
+		currentObj[key.toLowerCase()] = value
+	return result
 
 Cydia.queueCrawl = ->
 	log.info "[cydia] Queuing crawl."
@@ -34,7 +43,7 @@ Cydia.queueCrawl = ->
 
 Cydia.queueRepository = (repo) ->
 	log.info "[cydia] Queuing crawl of repository #{repo.url}."
-	job = jobs.create "cydia", title: "Cydia repository crawl (#{repo.url})", repo: repo._id
+	job = jobs.create "cydia:repository", title: "Cydia repository crawl (#{repo.url})", repo: repo._id
 	job.save()
 	return job
 
@@ -48,28 +57,79 @@ getRelease = (repo, cb) ->
 		return cb() unless resp.statusCode is 200
 		cb null, parseIndexFile body
 
+getPackages = (job, repo, cb) ->
+	packagesUrl = repo.url
+	unless repo.distribution is "./"
+		packagesUrl = url.resolve packagesUrl, "dists/#{repo.distribution}/#{repo.components[0]}/binary-iphoneos-arm/"
+	packagesUrl = url.resolve packagesUrl, "Packages"
+
+	packagesUrls = [
+		"#{packagesUrl}.bz2"
+		"#{packagesUrl}.gz"
+		packagesUrl
+	]
+
+	headPackage = (url, cb) ->
+		request.head url, (err, resp, body) ->
+			cb if err then false else resp.statusCode is 200
+
+	async.detectSeries packagesUrls, headPackage, (url) ->
+		return cb new Error "Couldn't find Packages!" unless url
+		stream = request.get url
+
+		streamSize = 0
+		stream.on "response", (response) ->
+			streamSize = response.headers["content-length"]
+			job.log "Downloading Packages from #{url}. Size: #{humanize.filesize(streamSize)}"
+			if streamSize
+				downloaded = 0
+				stream.on "data", (data) ->
+					downloaded += data.length
+					job.progress downloaded, streamSize
+
+		packageBuffer = new WritableStreamBuffer
+		if /bz2$/.test url
+			stream.pipe(new util.bunzip2).pipe packageBuffer
+		else if /gz$/.test url
+			stream.pipe(zlib.createGzip()).pipe packageBuffer
+		else
+			stream.pipe packageBuffer
+
+		packageBuffer.on "close", ->
+			cb null, parseIndexFile packageBuffer.getContentsAsString()
+
+
 Cydia.processRepository = (job, cb) ->
 	CydiaRepository.findById job.data.repo, wrapCallback cb, (repo) ->
 		return cb new Error "Couldn't find Repository!" unless repo
 
-		async.parallel 
-			release: (cb) -> getRelease repo, cb
-			packages: (cb) -> getPackages repo, cb
-		, (err, results) ->
-			
-
+		async.parallel [
+			(cb) ->
+				getRelease repo, wrapCallback cb, (release) ->
+					return cb() unless release
+					release = release[0]
+					job.log "Found Release file. Updating DB."
+					repo.label = release.label
+					repo.description = release.description
+					repo.save cb
+			(cb) ->
+				getPackages job, repo, wrapCallback cb, (packages) ->
+					job.log "#{packages.length} packages in this repo."
+					savePackage = (cydiaPackage, cb) ->
+						redis.hset "cydia:packages", "#{cydiaPackage.package}", repo._id, cb
+					async.forEachSeries packages, savePackage, cb
+		], (err) ->
+			job.log "Completed crawl of this Repository."
+			repo.lastCrawled = new Date()
+			repo.save cb
 Cydia.processCrawl = (job, cb) ->
 	CydiaRepository.find {}, wrapCallback cb, (repos) ->
-		repoProgress = []
-		updateProgress = ->
-			sum = _.reduce repoProgress, ((memo, num) -> memo + num), 0
-			job.progress sum, repoProgress.length * 100
-
+		completedRepos = 0
+		onComplete = ->
+			job.progress ++completedRepos, repos.length
+			if completedRepos is repos.length
+				cb()
 		for repo in repos
 			do (repo) ->
-				repoProgress[repo._id] = 0
-
 				repoJob = Cydia.queueRepository repo
-				repoJob.on "progress", (progress) ->
-					repoProgress[repo._id] = progress
-					updateProgress()
+				repoJob.on "complete", onComplete
