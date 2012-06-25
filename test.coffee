@@ -185,6 +185,16 @@ setTimeout ->
 , 1000
 ###
 
+util = require "./lib/util"
+fs = require "fs"
+
+bz2 = new util.bunzip2()
+
+zzz = fs.createReadStream("/tmp/test").pipe(bz2).pipe(process.stdout)
+
+return 
+
+
 job = {
 	progress: (done, total) -> console.warn "progress #{done}/#{total}"
 	log: (msg) -> console.log "#{msg}"
@@ -202,3 +212,8 @@ job = {
 
 Cydia.processRepository job,  ->
 	console.log arguments
+
+
+
+
+
