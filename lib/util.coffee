@@ -4,6 +4,7 @@ jsdom = require "jsdom"
 {Stream} = require "stream"
 {EventEmitter} = require "events"
 {spawn} = child_process = require "child_process"
+{WritableStreamBuffer} = require "stream-buffers"
 
 module.exports = util = require "util"
 
@@ -54,6 +55,15 @@ class util.bunzip2 extends Stream
 		@_proc.stdin.on "drain", => @emit "drain"
 		@_proc.stdin.on "close", =>
 			@writable = false
+
+		errBuffer = new WritableStreamBuffer
+		@_proc.stderr.pipe errBuffer
+		@_proc.on "exit", (retval) ->
+			unless retval is 0
+				err = new Error errBuffer.getContentsAsString()
+				err.code = retval
+				onError err
+
 	setEncoding: (encoding) ->
 		@_proc.stdout.setEncoding encoding
 	pause: ->

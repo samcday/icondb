@@ -190,7 +190,7 @@ fs = require "fs"
 
 bz2 = new util.bunzip2()
 
-zzz = fs.createReadStream("/tmp/test").pipe(bz2).pipe(process.stdout)
+zzz = fs.createReadStream("/tmp/foo.html").pipe(bz2).pipe(process.stdout)
 
 return 
 
