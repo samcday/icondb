@@ -9,10 +9,13 @@
 # hi.on "response", -> console.log arguments
 #hi.on "data", (data) -> console.log data
 
-# Apptrackr = require "./lib/apptrackr"
+Apptrackr = require "./lib/apptrackr"
 # Apptrackr.link.getAll 343200656, (err, links) ->
 # 	console.log require("util").inspect links, false, null
-# Apptrackr.app.details 284882215, ["appid"], console.log
+# Apptrackr.app.details 404154552, ["appid"], console.log
+Apptrackr.app.details 284882215, ["storeid"], console.log
+
+return
 
 #Sendspace = require "./lib/downloaders/sendspace"
 
@@ -75,6 +78,7 @@ slingfile "http://www.slingfile.com/file/o8yG7ioGbm", (err, response, stream) ->
 		downloaded += data.length
 		console.log ((downloaded / response.headers["content-length"]) * 100) + "%"
 ###
+
 ###
 dreamnet = require "./lib/scrapers/dreamnet.coffee"
 # dreamnet.queue()
@@ -87,6 +91,10 @@ job = {
 dreamnet.process job, ->
 	console.log arguments
 ###
+
+dreamnet = require "./lib/scrapers/dreamnet.coffee"
+dreamnet.queue()
+
 ###
 worker = require "./lib/worker"
 Indexer = require "./lib/indexer"
@@ -94,19 +102,22 @@ Indexer = require "./lib/indexer"
 #Indexer.queue "com.marvel.MarvelMobileComics", ->
 #	console.log "Done!"
 ###
+
 ###
 Indexer = require "./lib/indexer"
 job = {
 	progress: (done, total) -> console.warn "progress #{done}/#{total}"
 	log: (msg) -> console.log "#{msg}"
 	data:
-		bundleId: "com.marvel.MarvelMobileComics"
+		#bundleId: "com.marvel.MarvelMobileComics"
+		bundleId: "com.hackulo.us.installous"
 }
 
-Indexer.index job, (err) ->
+Indexer.processDiscover job, (err) ->
 	console.error err if err
 	console.log "Done!"
 ###
+
 ###
 App = require "./lib/model/App"
 
@@ -204,7 +215,6 @@ job = {
 	progress: (done, total) -> console.warn "progress #{done}/#{total}"
 	log: (msg) -> console.log "#{msg}"
 }
-
 
 Cydia = require "./lib/cydia"
 CydiaRepository = require "./lib/model/CydiaRepository"

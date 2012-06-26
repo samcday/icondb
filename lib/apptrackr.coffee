@@ -17,6 +17,7 @@ Apptrackr.request = (object, action, args, cb) ->
 			request: JSON.stringify payload
 	, (err, resp, body) ->
 		body = JSON.parse body
+		return cb new Error "API returned #{body.code} response." if body.code < 200 or body.code >= 300 
 		data = JSON.parse body.data
 		cb null, data
 

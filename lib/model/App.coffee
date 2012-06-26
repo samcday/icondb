@@ -57,7 +57,7 @@ AppSchema.statics.findOrCreate = (bundleId, cb) ->
 			return this.findOne { bundleId: bundleId }, cb
 
 		# If there wasn't an error at all, it means we just created a new App.
-		(require "../indexer").queue bundleId
+		(require "../indexer").queueDiscover bundleId
 		cb null, app
 
 AppSchema.methods.iconHints = (hints, cb) ->

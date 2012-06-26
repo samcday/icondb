@@ -133,3 +133,8 @@ Cydia.processCrawl = (job, cb) ->
 			do (repo) ->
 				repoJob = Cydia.queueRepository repo
 				repoJob.on "complete", onComplete
+
+Cydia.isCydiaApp = (bundleId, cb) ->
+	redis.hget "cydia:packages", bundleId, wrapCallback cb, (repoId) ->
+		return cb() unless repoId
+		CydiaRepository.findById repoId, cb

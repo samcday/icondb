@@ -1,16 +1,12 @@
 request = require "request"
 async = require "async"
 moment = require "moment"
-{GridStore} = mongodb = require "mongodb"
 {wrapCallback} = util = require "./util"
 mongoose = require "./mongoose"
 App = require "./model/App"
 log = require "./log"
 
 module.exports = iTunes = {}
-
-saveIcon = (app, iconUrl, cb) ->
-	new GridStore(mongoose.connection.db, "#{app._id}_icon.png", "w").open wrapCallback cb, (gs) ->
 
 itunesLookup = (bundleId, cb) ->
 	request.get
@@ -43,3 +39,13 @@ iTunes.scrape = (bundleId, cb) ->
 
 				app.save wrapCallback cb, ->
 					cb null, app
+
+iTunes.lookupByBundleId = (bundleId, cb) ->
+	request.get
+		url: "http://itunes.apple.com/lookup"
+		qs:
+			bundleId: bundleId
+	, wrapCallback cb, (resp, body) ->
+		body = util.safeJSONParse body, cb
+		return cb() unless body.resultCount is 1
+		cb null, body.results[0]

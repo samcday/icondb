@@ -56,7 +56,7 @@ Icons.new = (incoming, app, user, cb) ->
 				handleIdentify = ->
 					dims = identifyOutput.getContentsAsString().trim()
 					iconType = Icons.identify dims
-					return cb new Error "Invalid icon type." if iconType is "unknown"
+					return cb new Error "Invalid icon dimensions of #{dims}" if iconType is "unknown"
 					return cb null, iconType
 
 				if identify.stdout.destroyed then handleIdentify() else identify.stdout.once "end", handleIdentify

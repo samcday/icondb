@@ -23,11 +23,12 @@ parseId = (url) ->
 
 createIcon = (app, user, siteId, iconName, job, cb) ->
 	return cb() if not app
-	job.log "Downloading icon for #{app.bundleId}"
 	iconReq = request.get util.format appIconUrl, siteId, iconName
 	iconReq.on "response", (response) ->
 		return cb new Error "Couldn't download icon for #{app.bundleId}" unless response.statusCode is 200
-		Icons.new iconReq, app, user, cb
+		Icons.new iconReq, app, user, wrapCallback cb, ->
+			job.log "Successfully grabbed icon for #{bundleId}"
+			redis.sadd "dreamnet:scraped", app.bundleId, cb
 
 processApp = (task, cb) ->
 	{bundleId, iconName, siteId, user, job} = task
@@ -35,7 +36,6 @@ processApp = (task, cb) ->
 	# Quick check to make sure we haven't scraped this bundle id from this site already.
 	redis.sismember "dreamnet:scraped", bundleId, wrapCallback cb, (isMember) ->
 		if isMember
-			job.log "Skipping #{bundleId} as we already have it."
 			return cb()
 		App.findOrCreate bundleId, wrapCallback cb, (app) ->
 			app.iconHints { iphoneRetina: iconName }, wrapCallback cb, ->
@@ -81,8 +81,6 @@ Dreamnet.process = (job, cb) ->
 						processQ.push { siteId: siteId, bundleId: bundleId, iconName: iconName, job: job, user: user}, (err) ->
 							if err
 								job.log "ERROR - Couldn't get icon for #{bundleId}: #{err.message}"
-							else
-								job.log "Successfully grabbed icon for #{bundleId}"
 							done++
 							job.progress done, total
 				processQ.drain = cb
