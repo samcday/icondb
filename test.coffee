@@ -13,7 +13,9 @@ Apptrackr = require "./lib/apptrackr"
 # Apptrackr.link.getAll 343200656, (err, links) ->
 # 	console.log require("util").inspect links, false, null
 # Apptrackr.app.details 404154552, ["appid"], console.log
-Apptrackr.app.details 284882215, ["storeid"], console.log
+# Apptrackr.app.details 284882215, ["storeid"], console.log
+
+Apptrackr.bundle.bundleToId "com.sksports.nhl", console.log
 
 return
 

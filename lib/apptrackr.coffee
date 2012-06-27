@@ -3,6 +3,7 @@ request = require "request"
 module.exports = Apptrackr = 
 	link: {}
 	app: {}
+	bundle: {}
 
 Apptrackr.request = (object, action, args, cb) ->
 	req = 
@@ -35,3 +36,6 @@ Apptrackr.app.details = (appId, fields, cb) ->
 
 Apptrackr.app.scrape = (itunesUrl, cb) ->
 	Apptrackr.request "App", "scrape", { itunes_url: itunesUrl }, cb
+
+Apptrackr.bundle.bundleToId = (bundleId, cb) ->
+	Apptrackr.request "Bundle", "getItunesIDs", { bundleList: [bundleId] }, cb

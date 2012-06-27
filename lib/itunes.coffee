@@ -40,7 +40,7 @@ iTunes.scrape = (bundleId, cb) ->
 				app.save wrapCallback cb, ->
 					cb null, app
 
-iTunes.lookupByBundleId = (bundleId, cb) ->
+iTunes.discoverBundleId = (bundleId, cb) ->
 	request.get
 		url: "http://itunes.apple.com/lookup"
 		qs:

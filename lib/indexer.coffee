@@ -28,7 +28,7 @@ Indexer.processDiscover = (job, cb) ->
 				app.save wrapCallback cb, -> cb()
 				return
 
-			iTunes.lookupByBundleId bundleId, wrapCallback cb, (itunesData) ->
+			iTunes.discoverBundleId bundleId, wrapCallback cb, (itunesData) ->
 				if itunesData
 					app.type = "itunes"
 					app.itunes.id = itunesData.trackId
