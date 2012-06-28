@@ -8,6 +8,35 @@ log = require "./log"
 
 module.exports = iTunes = {}
 
+countries = [
+	"us"
+	"cn"
+	"jp"
+	"gb"
+	"kr"
+	"de"
+	"fr"
+	"ca"
+	"it"
+	"au"
+	"ru"
+	"es"
+	"nl"
+	"br"
+	"se"
+	"ch"
+	"in"
+	"dk"
+	"at"
+	"ae"
+	"no"
+	"pl"
+	"pt"
+	"fi"
+	"hu"
+	"cz"
+]
+
 itunesLookup = (bundleId, cb) ->
 	request.get
 		url: "http://itunes.apple.com/lookup"
